@@ -58,8 +58,33 @@ acurácia pura serão enganosas na etapa de modelagem (um modelo que sempre prev
 "não-churn" já acertaria 73% sem aprender nada de fato); métricas como F1-score, 
 precision/recall e matriz de confusão serão priorizadas na avaliação.
 
-**Próximo passo:** encoding das variáveis categóricas.
+**Separação em treino e teste**
+Antes do encoding, o dataset foi dividido em `X_train`/`X_test` e `y_train`/`y_test` 
+(`test_size=0.3`, `random_state=47`, `stratify=y`), para que qualquer transformação 
+subsequente (encoding, normalização) fosse ajustada apenas com base no treino, evitando 
+data leakage. O `stratify=y` garantiu que a proporção de ~73%/27% de `Churn` fosse 
+mantida tanto no treino quanto no teste.
+
+**Encoding das variáveis categóricas**
+Aplicado via `ColumnTransformer` + `OneHotEncoder(drop='first')`, ajustado (`fit`) 
+apenas no `X_train` e reaplicado no `X_test` apenas com `transform`. O `drop='first'` 
+evita a "armadilha da variável dummy" (multicolinearidade), removendo uma categoria de 
+referência por coluna original.
+
+**Normalização das variáveis numéricas**
+Como a etapa de Model Experimentation prevista inclui modelos sensíveis à escala dos 
+dados (Regressão Logística, KNN, SVM) além de modelos baseados em árvore (Árvore de 
+Decisão, Random Forest), as colunas numéricas (`tenure`, `MonthlyCharges`, 
+`TotalCharges`) foram normalizadas com `StandardScaler` (média 0, desvio padrão 1), 
+incorporado ao mesmo `ColumnTransformer` usado no encoding — também ajustado apenas 
+no treino.
+
+Após essas transformações, `X_train_processado` e `X_test_processado` ficaram com 
+30 colunas cada, prontos para a etapa de modelagem.
 
 ## 03 - Model Experimentation
 
-*Em andamento.*
+*Em andamento.* Serão instanciados e comparados diferentes algoritmos de classificação 
+(Regressão Logística, Árvore de Decisão, Random Forest, KNN, SVM), avaliados 
+prioritariamente por F1-score, precision/recall e matriz de confusão, dado o 
+desbalanceamento identificado na etapa anterior.
