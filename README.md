@@ -116,10 +116,11 @@ um classificador aleatório nesse dataset (~0.27, dado o desbalanceamento) — i
 que o modelo captura padrões reais, não apenas ruído.
 
 **Matriz de confusão:**
-          Previsto: No   Previsto: Yes
-          Real: No 1376 173
-          Real: Yes 246 315
 
+|              | Previsto: No | Previsto: Yes |
+|--------------|--------------|----------------|
+| **Real: No**  | 1376         | 173            |
+| **Real: Yes** | 246          | 315            |
 
 **Limitações identificadas:** mesmo sendo o melhor entre os 5, o modelo ainda deixa 
 de identificar 246 dos 561 clientes que realmente cancelaram (recall de 56%) — uma 
