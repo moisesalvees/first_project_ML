@@ -84,7 +84,59 @@ Após essas transformações, `X_train_processado` e `X_test_processado` ficaram
 
 ## 03 - Model Experimentation
 
-*Em andamento.* Serão instanciados e comparados diferentes algoritmos de classificação 
-(Regressão Logística, Árvore de Decisão, Random Forest, KNN, SVM), avaliados 
-prioritariamente por F1-score, precision/recall e matriz de confusão, dado o 
-desbalanceamento identificado na etapa anterior.
+Com o dataset já tratado e pré-processado na etapa anterior, esta etapa teve como 
+objetivo instanciar e treinar diferentes algoritmos de classificação, comparando 
+seu desempenho para decidir qual utilizar no projeto final.
+
+**Modelos testados:** Regressão Logística, Árvore de Decisão, Random Forest, KNN e SVM, 
+todos com `random_state=47` (quando aplicável) para reprodutibilidade.
+
+**Metodologia de avaliação:** dado o desbalanceamento da variável alvo identificado 
+na etapa 2 (~73% não-churn / 27% churn), a acurácia isolada não foi utilizada como 
+critério de decisão — um modelo que sempre prevê "não-churn" já acertaria ~73% sem 
+aprender nenhum padrão real. Priorizou-se o F1-score da classe `Yes` como métrica 
+principal de ranqueamento, por representar o equilíbrio entre precision (evitar 
+falsos alarmes) e recall (não deixar passar clientes que realmente cancelariam).
+
+### Resultados comparativos
+
+| Modelo               | Accuracy | Precision (Yes) | Recall (Yes) | F1-score (Yes) |
+|-----------------------|----------|------------------|----------------|------------------|
+| Regressão Logística   | 0.801    | 0.645            | 0.561          | 0.601            |
+| KNN                   | 0.763    | 0.558            | 0.515          | 0.536            |
+| Random Forest         | 0.780    | 0.614            | 0.467          | 0.530            |
+| SVM                   | 0.790    | 0.656            | 0.439          | 0.526            |
+| Árvore de Decisão     | 0.724    | 0.482            | 0.503          | 0.492            |
+
+### Modelo selecionado: Regressão Logística
+
+Obteve o maior F1-score (0.60) e o melhor recall (0.56) da classe `Yes` entre os 5 
+modelos testados. Sua precision (0.645) é mais que o dobro da precision esperada de 
+um classificador aleatório nesse dataset (~0.27, dado o desbalanceamento) — indicando 
+que o modelo captura padrões reais, não apenas ruído.
+
+**Matriz de confusão:**
+          Previsto: No   Previsto: Yes
+          Real: No 1376 173
+          Real: Yes 246 315
+
+
+**Limitações identificadas:** mesmo sendo o melhor entre os 5, o modelo ainda deixa 
+de identificar 246 dos 561 clientes que realmente cancelaram (recall de 56%) — uma 
+limitação relevante para o objetivo de negócio de retenção, a ser explorada em 
+etapas futuras (ajuste de hiperparâmetros, engenharia de atributos, ou balanceamento 
+de classes).
+
+**Hipótese para a diferença de performance:** o bom desempenho relativo de um modelo 
+linear simples (Regressão Logística) frente a modelos mais complexos sugere que as 
+relações entre as features e o churn, após o pré-processamento, podem ser majoritariamente 
+lineares — hipótese a ser validada em etapas futuras.
+
+## 04 - Data Pipeline & Feature Engineering
+
+*Em andamento.*
+
+## 05 - Model Building
+
+*Em andamento.*
+
